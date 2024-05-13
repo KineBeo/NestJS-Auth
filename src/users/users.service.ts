@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import User from './user.entity';
 import { Repository } from 'typeorm';
@@ -12,7 +12,7 @@ export class UsersService {
     constructor(
         @InjectRepository(User)
         private usersRepository: Repository<User>,
-    ) { }
+    ) {}
 
     async getById(id: number) {
         const user = await this.usersRepository.findOne({ where: { id } });
@@ -20,9 +20,9 @@ export class UsersService {
             return user;
         }
 
-        throw new HttpException('User with this id does not exist',
-            HttpStatus.NOT_FOUND);
+        throw new BadRequestException('User with this id does not exist');
     }
+
     async getByEmail(email: string) {
         const user = await this.usersRepository.findOne({
             where: { email }
@@ -30,8 +30,8 @@ export class UsersService {
         if (user) {
             return user;
         }
-        throw new HttpException('User with this email does not exist',
-            HttpStatus.NOT_FOUND);
+
+        throw new BadRequestException('User with this id does not exist');
     }
 
     async create(userData: CreateUserDto) {

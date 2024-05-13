@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -29,10 +29,7 @@ export class AuthenticationService {
             createdUser.password = undefined;
             return createdUser;
         } catch (error) {
-            throw new HttpException(
-            'Something went wrong',
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            );
+            throw new BadRequestException(error.message);
         }
     }
 
@@ -55,7 +52,7 @@ export class AuthenticationService {
             hashedPassword
         );
         if (!isPasswordMatching) {
-            throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
+            throw new UnauthorizedException('Wrong credentials provided');
         }
     }
 
@@ -102,7 +99,6 @@ export class AuthenticationService {
     }
 
     async isTokenExpired(token: string) {
-        // Check if the token is expired
         const isTokenExpired = this.jwtService.verify(token);
         return isTokenExpired;
     }
