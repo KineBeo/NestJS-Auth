@@ -4,7 +4,6 @@ import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import RegisterDto from './dto/register.dto';
-import PostgresErrorCode from '../database/postgresErrorCode.enum';
 @Injectable()
 export class AuthenticationService {
     constructor(
@@ -14,24 +13,25 @@ export class AuthenticationService {
     }
 
     public async register(registrationData: RegisterDto) {
+        const emailExists = await this.usersService.count(registrationData.email);
+        if (emailExists) {
+            throw new HttpException(
+                'User with that email already exists',
+                HttpStatus.BAD_REQUEST,
+            );
+        }
         const hashedPassword = await bcrypt.hash(registrationData.password, 10);
         try {
             const createdUser = await this.usersService.create({
-                ...registrationData,
-                password: hashedPassword,
+            ...registrationData,
+            password: hashedPassword,
             });
             createdUser.password = undefined;
             return createdUser;
         } catch (error) {
-            if (error?.code === PostgresErrorCode.UniqueViolation) {
-                throw new HttpException(
-                    'User with that email already exists',
-                    HttpStatus.BAD_REQUEST,
-                );
-            }
             throw new HttpException(
-                'Something went wrong',
-                HttpStatus.INTERNAL_SERVER_ERROR,
+            'Something went wrong',
+            HttpStatus.INTERNAL_SERVER_ERROR,
             );
         }
     }

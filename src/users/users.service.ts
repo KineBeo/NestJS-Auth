@@ -39,4 +39,8 @@ export class UsersService {
         await this.usersRepository.save(newUser);
         return newUser;
     }
+
+    async count(email: string) {
+        return this.usersRepository.count({ where: { email } });
+    }
 }
