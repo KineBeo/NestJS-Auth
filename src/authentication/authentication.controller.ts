@@ -8,6 +8,8 @@ import RegisterDto from './dto/register.dto';
 import LoginDto from './dto/login.dto';
 import refreshJwtAuthenticationGuard from 'src/guards/refresh-token-jwt-authentication.guard';
 import { JwtService } from '@nestjs/jwt';
+import RoleGuard from 'src/guards/role.guard';
+import Role from 'src/enum/role.enum';
 
 @Controller('authentication')
 export class AuthenticationController {
@@ -44,6 +46,7 @@ export class AuthenticationController {
         return this.authenticationService.validateRefreshTokenToGetAccessToken(refreshToken)
     }
 
+    // @UseGuards(RoleGuard(Role.Admin))
     @UseGuards(JwtAuthenticationGuard)
     @Get()
     authenticate() {

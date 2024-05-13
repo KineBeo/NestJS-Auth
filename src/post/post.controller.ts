@@ -4,6 +4,8 @@ import { PostService } from './post.service';
 import { CreatePostDto } from './dto/createPost.dto';
 import { UpdatePostDto } from './dto/updatePost.dto';
 import JwtAuthenticationGuard from 'src/guards/jwt-authentication.guard';
+import Role from 'src/enum/role.enum';
+import RoleGuard from 'src/guards/role.guard';
 
 @Controller('post')
 export class PostController {
@@ -11,6 +13,7 @@ export class PostController {
         private readonly postsService: PostService
     ) { }
 
+    @UseGuards(RoleGuard(Role.Admin))
     @Get()
     async getAllPosts() {
         return await this.postsService.getAllPosts();
@@ -34,7 +37,8 @@ export class PostController {
     }
 
     @Delete(':id')
-    async deletePost(@Param('id') id: string) {
+    @UseGuards(JwtAuthenticationGuard)
+    async deletePost(@Param('id') id: number) {
         this.postsService.deletePost(Number(id));
     }
 }

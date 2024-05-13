@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Exclude } from 'class-transformer';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-
+import Role from '../enum/role.enum';
 @Entity()
 class User {
     @PrimaryGeneratedColumn()
@@ -15,6 +15,14 @@ class User {
 
     @Column()
     public password: string;
+
+    @Column({
+        type: 'enum', 
+        enum: Role, 
+        array: true, 
+        default: [Role.User]    
+    })              
+    public roles: Role[];
 
     @Column({
         nullable: true
